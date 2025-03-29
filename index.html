@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RailYatra - Book Your Train Journey</title>
+    <style>
+        :root {
+            --primary: #006064;
+            --secondary: #00838f;
+            --accent: #4fb3bf;
+            --light: #e0f7fa;
+            --dark: #002f33;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 5px 5px 0 0;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background-color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            grid-column: span 2;
+        }
+        
+        button:hover {
+            background-color: var(--secondary);
+        }
+        
+        .passenger-section {
+            grid-column: span 2;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            margin-top: 10px;
+        }
+        
+        .passenger-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .add-passenger {
+            background-color: var(--accent);
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .passenger {
+            background-color: var(--light);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .remove-passenger {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            form {
+                grid-template-columns: 1fr;
+            }
+            
+            button {
+                grid-column: span 1;
+            }
+            
+            .passenger-section {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>RailYatra</h1>
+        <p>Book your train journey with ease</p>
+    </header>
+    
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="openTab('booking')">Book Journey</button>
+            <button class="tab" onclick="openTab('how-to-use')">How to Use</button>
+            <button class="tab" onclick="openTab('contact')">Contact Us</button>
+        </div>
+        
+        <div id="booking" class="tab-content active">
+            <h2>Book Your Train Journey</h2>
+            <form id="journeyForm">
+                <div class="form-group">
+                    <label for="trainNumber">Train Number*</label>
+                    <input type="text" id="trainNumber" required placeholder="e.g. 12345">
+                </div>
+                
+                <div class="form-group">
+                    <label for="trainName">Train Name</label>
+                    <input type="text" id="trainName" placeholder="Will be auto-filled if known">
+                </div>
+                
+                <div class="form-group">
+                    <label for="source">Source Station*</label>
+                    <input type="text" id="source" required placeholder="e.g. Delhi">
+                </div>
+                
+                <div class="form-group">
+                    <label for="destination">Destination Station*</label>
+                    <input type="text" id="destination" required placeholder="e.g. Mumbai">
+                </div>
+                
+                <div class="form-group">
+                    <label for="journeyDate">Journey Date*</label>
+                    <input type="date" id="journeyDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="travelClass">Class*</label>
+                    <select id="travelClass" required>
+                        <option value="">Select Class</option>
+                        <option value="1A">First AC (1A)</option>
+                        <option value="2A">Second AC (2A)</option>
+                        <option value="3A">Third AC (3A)</option>
+                        <option value="SL">Sleeper (SL)</option>
+                        <option value="CC">AC Chair Car (CC)</option>
+                        <option value="EC">Executive Class (EC)</option>
+                        <option value="2S">Second Sitting (2S)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="concession">Concession/Quota Type</label>
+                    <select id="concession">
+                        <option value="general">General</option>
+                        <option value="tatkal">Tatkal</option>
+                        <option value="premium_tatkal">Premium Tatkal</option>
+                        <option value="senior">Senior Citizen</option>
+                        <option value="student">Student</option>
+                        <option value="divyang">Divyangjan</option>
+                        <option value="armed">Armed Forces</option>
+                        <option value="railway">Railway Employee</option>
+                    </select>
+                </div>
+                
+                <div class="passenger-section">
+                    <div class="passenger-header">
+                        <h3>Passenger Details</h3>
+                        <span class="add-passenger" onclick="addPassenger()">+ Add Passenger</span>
+                    </div>
+                    
+                    <div class="passengers-container">
+                        <div class="passenger">
+                            <div class="form-group">
+                                <label for="passengerName1">Full Name*</label>
+                                <input type="text" id="passengerName1" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="passengerAge1">Age*</label>
+                                <input type="number" id="passengerAge1" required min="1" max="120">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="passengerGender1">Gender*</label>
+                                <select id="passengerGender1" required>
+                                    <option value="">Select</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="passengerId1">Government ID Number*</label>
+                                <input type="text" id="passengerId1" required placeholder="Aadhaar/Passport/etc.">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="passengerIdType1">ID Type*</label>
+                                <select id="passengerIdType1" required>
+                                    <option value="">Select ID Type</option>
+                                    <option value="aadhaar">Aadhaar</option>
+                                    <option value="passport">Passport</option>
+                                    <option value="voter">Voter ID</option>
+                                    <option value="pan">PAN Card</option>
+                                    <option value="dl">Driving License</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="passengerFood1">Food Preference</label>
+                                <select id="passengerFood1">
+                                    <option value="none">No Meal</option>
+                                    <option value="veg">Vegetarian</option>
+                                    <option value="nonveg">Non-Vegetarian</option>
+                                    <option value="jain">Jain</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="passengerBerth1">Berth Preference</label>
+                                <select id="passengerBerth1">
+                                    <option value="none">No Preference</option>
+                                    <option value="lower">Lower Berth</option>
+                                    <option value="middle">Middle Berth</option>
+                                    <option value="upper">Upper Berth</option>
+                                    <option value="sideLower">Side Lower</option>
+                                    <option value="sideUpper">Side Upper</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="grid-column: span 2;">
+                    <label for="userContact">Your Contact Number*</label>
+                    <input type="tel" id="userContact" required placeholder="Mobile number for updates">
+                </div>
+                
+                <button type="submit">Submit Booking Request</button>
+            </form>
+        </div>
+        
+        <div id="how-to-use" class="tab-content">
+            <h2>How to Use RailYatra</h2>
+            <div class="instructions">
+                <h3>Booking Your Train Journey</h3>
+                <ol>
+                    <li>Fill in the train number (you can find this on IRCTC or railway websites)</li>
+                    <li>Enter your source and destination stations</li>
+                    <li>Select your journey date</li>
+                    <li>Choose your travel class (1A, 2A, 3A, SL, etc.)</li>
+                    <li>Select any applicable concession or quota type (General, Tatkal, Premium Tatkal, etc.)</li>
+                    <li>Add passenger details including:
+                        <ul>
+                            <li>Name, age, and gender</li>
+                            <li>Government ID information</li>
+                            <li>Individual food preferences</li>
+                            <li>Individual berth preferences</li>
+                        </ul>
+                    </li>
+                    <li>Provide your contact number for updates</li>
+                    <li>Click "Submit Booking Request"</li>
+                    <li>You will receive a confirmation message on WhatsApp</li>
+                </ol>
+                
+                <h3>After Booking</h3>
+                <ul>
+                    <li>Our team will process your request within 24 hours</li>
+                    <li>You'll receive PNR details and payment link via WhatsApp/SMS</li>
+                    <li>Complete payment to confirm your tickets</li>
+                    <li>E-ticket will be sent to your registered contact</li>
+                </ul>
+                
+                <h3>Important Notes</h3>
+                <ul>
+                    <li>All fields marked with * are mandatory</li>
+                    <li>Ensure government ID details match exactly with your ID proof</li>
+                    <li>Tatkal bookings open at 10 AM one day before journey</li>
+                    <li>Premium Tatkal fares are dynamic and may be higher</li>
+                    <li>For group bookings, add all passengers before submitting</li>
+                    <li>Ticket confirmation is subject to availability</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div id="contact" class="tab-content">
+            <h2>Contact Us</h2>
+            <div class="contact-info">
+                <p><strong>Customer Support:</strong></p>
+                <p>Phone: <a href="tel:+911234567890">+91 1234567890</a></p>
+                <p>WhatsApp: <a href="https://wa.me/916377473398">+91 6377473398</a></p>
+                <p>Email: <a href="mailto:support@railyatra.in">support@railyatra.in</a></p>
+                
+                <p><strong>Operating Hours:</strong></p>
+                <p>Monday to Saturday: 8:00 AM to 10:00 PM</p>
+                <p>Sunday: 9:00 AM to 8:00 PM</p>
+                
+                <p><strong>Tatkal Booking Support:</strong></p>
+                <p>Available daily 9:30 AM to 11:30 AM for same-day queries</p>
+                
+                <p><strong>For urgent queries:</strong></p>
+                <p>WhatsApp is the fastest way to reach us</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 RailYatra. All rights reserved.</p>
+        <p>This is a demo website for educational purposes only.</p>
+    </footer>
+    
+    <script>
+        let passengerCount = 1;
+        
+        function openTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // Remove active class from all tabs
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            // Show the selected tab content and mark tab as active
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        function addPassenger() {
+            passengerCount++;
+            const passengersContainer = document.querySelector('.passengers-container');
+            
+            const newPassenger = document.createElement('div');
+            newPassenger.className = 'passenger';
+            newPassenger.innerHTML = `
+                <div class="form-group">
+                    <label for="passengerName${passengerCount}">Full Name*</label>
+                    <input type="text" id="passengerName${passengerCount}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="passengerAge${passengerCount}">Age*</label>
+                    <input type="number" id="passengerAge${passengerCount}" required min="1" max="120">
+                </div>
+                
+                <div class="form-group">
+                    <label for="passengerGender${passengerCount}">Gender*</label>
+                    <select id="passengerGender${passengerCount}" required>
+                        <option value="">Select</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="passengerId${passengerCount}">Government ID Number*</label>
+                    <input type="text" id="passengerId${passengerCount}" required placeholder="Aadhaar/Passport/etc.">
+                </div>
+                
+                <div class="form-group">
+                    <label for="passengerIdType${passengerCount}">ID Type*</label>
+                    <select id="passengerIdType${passengerCount}" required>
+                        <option value="">Select ID Type</option>
+                        <option value="aadhaar">Aadhaar</option>
+                        <option value="passport">Passport</option>
+                        <option value="voter">Voter ID</option>
+                        <option value="pan">PAN Card</option>
+                        <option value="dl">Driving License</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="passengerFood${passengerCount}">Food Preference</label>
+                    <select id="passengerFood${passengerCount}">
+                        <option value="none">No Meal</option>
+                        <option value="veg">Vegetarian</option>
+                        <option value="nonveg">Non-Vegetarian</option>
+                        <option value="jain">Jain</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="passengerBerth${passengerCount}">Berth Preference</label>
+                    <select id="passengerBerth${passengerCount}">
+                        <option value="none">No Preference</option>
+                        <option value="lower">Lower Berth</option>
+                        <option value="middle">Middle Berth</option>
+                        <option value="upper">Upper Berth</option>
+                        <option value="sideLower">Side Lower</option>
+                        <option value="sideUpper">Side Upper</option>
+                    </select>
+                </div>
+                
+                <button type="button" class="remove-passenger" onclick="removePassenger(this)">Remove Passenger</button>
+            `;
+            
+            passengersContainer.appendChild(newPassenger);
+        }
+        
+        function removePassenger(button) {
+            if (passengerCount > 1) {
+                const passengerDiv = button.parentElement;
+                passengerDiv.remove();
+                passengerCount--;
+            } else {
+                alert("At least one passenger is required.");
+            }
+        }
+        
+        document.getElementById('journeyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect all form data
+            const formData = {
+                trainNumber: document.getElementById('trainNumber').value,
+                trainName: document.getElementById('trainName').value,
+                source: document.getElementById('source').value,
+                destination: document.getElementById('destination').value,
+                journeyDate: document.getElementById('journeyDate').value,
+                travelClass: document.getElementById('travelClass').value,
+                concession: document.getElementById('concession').value,
+                userContact: document.getElementById('userContact').value,
+                passengers: []
+            };
+            
+            // Collect passenger data
+            for (let i = 1; i <= passengerCount; i++) {
+                const name = document.getElementById(`passengerName${i}`)?.value;
+                if (name) {
+                    formData.passengers.push({
+                        name: name,
+                        age: document.getElementById(`passengerAge${i}`).value,
+                        gender: document.getElementById(`passengerGender${i}`).value,
+                        idNumber: document.getElementById(`passengerId${i}`).value,
+                        idType: document.getElementById(`passengerIdType${i}`).value,
+                        foodPreference: document.getElementById(`passengerFood${i}`).value,
+                        berthPreference: document.getElementById(`passengerBerth${i}`).value
+                    });
+                }
+            }
+            
+            // Format the message for WhatsApp
+            let whatsappMessage = `New Train Journey Booking Request:\n\n`;
+            whatsappMessage += `*Train Details:*\n`;
+            whatsappMessage += `Number: ${formData.trainNumber}\n`;
+            whatsappMessage += `Name: ${formData.trainName || 'Not specified'}\n`;
+            whatsappMessage += `From: ${formData.source} to ${formData.destination}\n`;
+            whatsappMessage += `Date: ${formData.journeyDate}\n`;
+            whatsappMessage += `Class: ${formData.travelClass}\n`;
+            whatsappMessage += `Quota: ${formData.concession}\n\n`;
+            
+            whatsappMessage += `*Passenger Details:*\n`;
+            formData.passengers.forEach((passenger, index) => {
+                whatsappMessage += `Passenger ${index + 1}:\n`;
+                whatsappMessage += `- Name: ${passenger.name}\n`;
+                whatsappMessage += `- Age: ${passenger.age}\n`;
+                whatsappMessage += `- Gender: ${passenger.gender}\n`;
+                whatsappMessage += `- ID Type: ${passenger.idType}\n`;
+                whatsappMessage += `- ID Number: ${passenger.idNumber}\n`;
+                whatsappMessage += `- Food: ${passenger.foodPreference}\n`;
+                whatsappMessage += `- Berth: ${passenger.berthPreference}\n\n`;
+            });
+            
+            whatsappMessage += `*Contact Number:* ${formData.userContact}`;
+            
+            // Encode the message for WhatsApp URL
+            const encodedMessage = encodeURIComponent(whatsappMessage);
+            const whatsappUrl = `https://wa.me/916377473398?text=${encodedMessage}`;
+            
+            // Open WhatsApp with the pre-filled message
+            window.open(whatsappUrl, '_blank');
+            
+            // Show confirmation to user
+            alert('Your booking request has been prepared. Please check WhatsApp to send it to our team.');
+        });
+        
+        // Auto-fill train name if known (simplified example)
+        document.getElementById('trainNumber').addEventListener('change', function() {
+            const trainNumber = this.value;
+            const trainNameField = document.getElementById('trainName');
+            
+            // This would normally be an API call to get train details
+            // For demo, we'll just use a simple mapping
+            const knownTrains = {
+                '12345': 'Rajdhani Express',
+                '12951': 'Mumbai Rajdhani',
+                '12952': 'Delhi Rajdhani',
+                '12301': 'Duronto Express'
+            };
+            
+            if (knownTrains[trainNumber]) {
+                trainNameField.value = knownTrains[trainNumber];
+            } else {
+                trainNameField.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
